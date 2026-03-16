@@ -1,59 +1,120 @@
-# Sec04Bases
+# Sec04 - Bases de Angular con Signals
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.2.
+Proyecto del curso **Angular: De cero a experto** (Sección 4). Aplicación construida con **Angular 21** que demuestra los fundamentos del framework utilizando **signals** como mecanismo principal de reactividad.
 
-## Development server
+## Características principales
 
-To start a local development server, run:
+- **Signals** (`signal`, `computed`, `effect`) para manejo de estado reactivo
+- **Standalone components** (estándar en Angular v20+)
+- **Routing** con `HashLocationStrategy` y navegación entre páginas
+- **Servicios inyectables** con `inject()` y `providedIn: 'root'`
+- **Inputs y outputs funcionales** (`input()`, `output()`) en lugar de decoradores
+- **Persistencia** de datos en `localStorage` usando `effect()`
+- **Control flow nativo** (`@if`, `@for`) en templates
+
+## Páginas
+
+### Counter Page (`/`)
+
+Demuestra la diferencia entre una propiedad convencional y un `signal`:
+
+```typescript
+counter = 0;                // propiedad clásica
+counterSignal = signal(0);  // signal reactivo
+```
+
+Incluye botones para incrementar, decrementar y resetear. Un `setInterval` actualiza ambos valores para evidenciar el contraste en la detección de cambios.
+
+### Hero Page (`/hero`)
+
+Uso de `signal` y `computed` para derivar estado:
+
+```typescript
+name = signal('Ironman');
+age = signal(45);
+heroDescription = computed(() => `${this.name()} - ${this.age()} años`);
+capitalizedName = computed(() => this.name().toUpperCase());
+```
+
+Los `computed` se recalculan automáticamente al cambiar los signals de los que dependen.
+
+### Dragon Ball Page (`/dragonball`)
+
+CRUD básico de personajes con signals. Los personajes se almacenan en un `signal<Character[]>` local y se renderizan con `@for` y `@if`:
+
+```typescript
+characters = signal<Character[]>([
+  { id: 1, name: 'Goku', power: 9000 },
+]);
+```
+
+Usa class bindings (`[class.text-danger]`, `[class.text-primary]`) para estilizar según el nivel de poder.
+
+### Dragon Ball Super Page (`/dragonball-super`)
+
+Evolución de la página anterior aplicando mejores prácticas:
+
+- **Servicio compartido** (`DragonballService`) inyectado con `inject()`
+- **Componentes reutilizables**: `CharacterList` y `DragonballCharacterAdd`
+- **Comunicación padre-hijo** con `input()` / `output()`
+- **Persistencia automática** en `localStorage` mediante `effect()` en el servicio
+
+```typescript
+// dragonball.service.ts
+characters = signal<Character[]>(loadFromLocalStorage());
+
+saveToLocalStorage = effect(() => {
+  localStorage.setItem('dragonball_characters', JSON.stringify(this.characters()));
+});
+```
+
+## Estructura del proyecto
+
+```
+src/app/
+├── interfaces/          # Character (id, name, power)
+├── services/            # DragonballService - gestión de personajes con signals
+├── components/
+│   ├── shared/navbar/   # Barra de navegación con RouterLink
+│   └── dragonball/
+│       ├── character-list/           # Lista reutilizable (input signals)
+│       └── dragonball-character-add/ # Formulario de alta (output signal)
+└── pages/
+    ├── counter/           # Comparación signal vs propiedad clásica
+    ├── hero/              # computed() y signal()
+    ├── dragonball/        # CRUD local con signals
+    └── dragonball-super/  # CRUD con servicio, componentes y localStorage
+```
+
+## Conceptos de Signals demostrados
+
+| API | Uso en el proyecto |
+|---|---|
+| `signal()` | Estado local en componentes y servicios |
+| `computed()` | Estado derivado (`heroDescription`, `capitalizedName`, `powerClasses`) |
+| `effect()` | Efecto secundario: guardar en `localStorage` al cambiar `characters` |
+| `signal.set()` | Reemplazo directo del valor |
+| `signal.update()` | Actualización basada en el valor anterior |
+| `input()` | Props de entrada en componentes hijos (`CharacterList`) |
+| `output()` | Emisión de eventos hacia el padre (`DragonballCharacterAdd`) |
+
+## Requisitos
+
+- Node.js 20+
+- Angular CLI 21+
+
+## Instalación y ejecución
 
 ```bash
+# Instalar dependencias
+npm install
+
+# Servidor de desarrollo (http://localhost:4200)
 ng serve
-```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
+# Build de producción
 ng build
-```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
+# Tests
 ng test
 ```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

@@ -3,7 +3,7 @@
     display: flex;
     justify-content: space-around;
     background-color: #212121;
-    color:white;
+    color: white;
     padding: 10px;
   }
 
@@ -21,8 +21,6 @@
     color: #ff4081;
     text-decoration: underline;
   }
-
-
 </style>
 
 
@@ -34,7 +32,10 @@
     Hero
   </a>
 
-    <a [routerLink]="['/dragonball']" [routerLinkActive]="'active'">
+  <a [routerLink]="['/dragonball']" [routerLinkActive]="'active'">
     Dragonball
+  </a>
+  <a routerLink="/dragonball-super" routerLinkActive="active">
+    Dragonball Super
   </a>
 </nav>

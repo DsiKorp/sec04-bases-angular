@@ -9,15 +9,16 @@ import { Component, computed, signal } from '@angular/core';
   templateUrl: './dragonball-page.html'
 })
 export class Dragonball {
-  name = signal('Gohan');
-  power = signal(100);
+
+  name = signal('');
+  power = signal(0);
 
   characters = signal<Character[]>([
     { id: 1, name: 'Goku', power: 9000 },
-    { id: 2, name: 'Vegeta', power: 8000 },
-    { id: 3, name: 'AstroBot', power: 3000 },
-    { id: 4, name: 'Yancha', power: 500 },
-    { id: 5, name: 'Piccolo', power: 3000 },
+    // { id: 2, name: 'Vegeta', power: 8000 },
+    // { id: 3, name: 'AstroBot', power: 3000 },
+    // { id: 4, name: 'Yancha', power: 500 },
+    // { id: 5, name: 'Piccolo', power: 3000 },
   ]);
 
   powerClasses = computed(() => {
@@ -26,5 +27,32 @@ export class Dragonball {
       "text-primary": this.power() <= 8000
     };
   });
+
+  addCharacter() {
+    console.log(this.name(), this.power());
+
+    if (!this.name() || !this.power || this.power() <= 0) {
+      return
+    }
+
+    const newCharacter: Character = {
+      id: Math.max(...this.characters().map(c => c.id)) + 1,
+      name: this.name(),
+      power: this.power()
+    }
+
+    this.characters.update(characters => [...characters, newCharacter]);
+
+    this.resetFields();
+
+    console.log({ characters: this.characters() });
+  }
+
+  resetFields() {
+    this.name.set('');
+    this.power.set(0);
+  }
+
+
 
 }
